@@ -1,0 +1,13 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/darrell-portfolio', '.']
+
+  # Push the Docker image to Container Registry
+  # (Optional: Remove if you only want to build)
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   args: ['push', 'gcr.io/$PROJECT_ID/darrell-portfolio']
+
+# Optional: Store images in Google Artifact Registry instead of Container Registry
+# images:
+#   - 'gcr.io/$PROJECT_ID/darrell-portfolio'

@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import About from './pages/About';
 
+import ReactMarkdown from 'react-markdown';
+
 function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -57,8 +59,15 @@ function Home() {
             className="h-24 md:h-32 w-auto"
           />
         </Link>
-        <div className="mt-2 text-sm md:text-base font-mono tracking-widest text-gray-400 uppercase">
-          {headline}
+        <div className="mt-2 text-sm md:text-base font-mono tracking-widest text-gray-400 uppercase pointer-events-auto">
+          <ReactMarkdown
+            components={{
+              a: ({ node, ...props }) => <a {...props} className="text-blue-400 hover:text-blue-300 underline" target="_blank" rel="noopener noreferrer" />,
+              p: ({ node, ...props }) => <span {...props} />
+            }}
+          >
+            {headline}
+          </ReactMarkdown>
         </div>
       </div>
 

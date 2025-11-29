@@ -54,7 +54,14 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
             const timeOfDay = (hour * 60 + minute) / 1440;
             const timeOffset = timeOfDay * 10;
 
-            const y = dayY + timeOffset;
+            let y = dayY + timeOffset;
+
+            // Exclusion Zone Logic (Logo/Headline area)
+            // Expanded zone: X between 30-70, Y < 35
+            if (x > 30 && x < 70 && y < 35) {
+                // Push it down below the exclusion zone
+                y = 40 + (Math.random() * 10);
+            }
 
             return {
                 ...post,
@@ -134,48 +141,52 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
             </svg>
 
             {/* Interactive Stars */}
-            {processedPosts.map((post) => (
-                <motion.div
-                    key={post.id}
-                    className="absolute cursor-pointer group"
-                    style={{
-                        left: `${post.calculatedX}%`,
-                        top: `${post.calculatedY}%`,
-                    }}
-                    initial={{ x: "-50%", y: "-50%" }}
-                    whileHover={{ scale: 1.5, zIndex: 50 }}
-                    onClick={() => onPostClick(post)}
-                    onMouseEnter={() => setHoveredPost(post)}
-                    onMouseLeave={() => setHoveredPost(null)}
-                >
-                    {/* The Star */}
-                    <div className="w-4 h-4 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)] relative z-10" />
+            {processedPosts.map((post) => {
+                const isNearBottom = post.calculatedY > 60;
 
-                    {/* Pulse Effect */}
-                    <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-75" />
+                return (
+                    <motion.div
+                        key={post.id}
+                        className="absolute cursor-pointer group"
+                        style={{
+                            left: `${post.calculatedX}%`,
+                            top: `${post.calculatedY}%`,
+                        }}
+                        initial={{ x: "-50%", y: "-50%" }}
+                        whileHover={{ scale: 1.5, zIndex: 50 }}
+                        onClick={() => onPostClick(post)}
+                        onMouseEnter={() => setHoveredPost(post)}
+                        onMouseLeave={() => setHoveredPost(null)}
+                    >
+                        {/* The Star */}
+                        <div className="w-4 h-4 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)] relative z-10" />
 
-                    {/* Tooltip */}
-                    {hoveredPost?.id === post.id && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={`absolute top-6 ${post.calculatedX > 80 ? 'right-0 translate-x-1/4' : 'left-1/2 -translate-x-1/2'} bg-gray-900 border border-gray-700 rounded-lg w-64 z-20 pointer-events-none overflow-hidden shadow-xl`}
-                        >
-                            {post.media_url && (
-                                <div className="h-32 w-full overflow-hidden">
-                                    <img src={post.media_url} alt="" className="w-full h-full object-cover" />
+                        {/* Pulse Effect */}
+                        <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-75" />
+
+                        {/* Tooltip */}
+                        {hoveredPost?.id === post.id && (
+                            <motion.div
+                                initial={{ opacity: 0, y: isNearBottom ? -10 : 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className={`absolute ${isNearBottom ? 'bottom-full mb-2' : 'top-6'} ${post.calculatedX > 80 ? 'right-0 translate-x-1/4' : 'left-1/2 -translate-x-1/2'} bg-gray-900 border border-gray-700 rounded-lg w-48 z-20 pointer-events-none overflow-hidden shadow-xl`}
+                            >
+                                {post.media_url && (
+                                    <div className="h-24 w-full overflow-hidden">
+                                        <img src={post.media_url} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                )}
+                                <div className="p-2">
+                                    <h3 className="text-white font-bold text-xs font-mono leading-tight">{post.title}</h3>
+                                    <p className="text-gray-400 text-[10px] mt-1 font-mono">
+                                        {new Date(post.created_at).toLocaleDateString()}
+                                    </p>
                                 </div>
-                            )}
-                            <div className="p-3">
-                                <h3 className="text-white font-bold text-sm font-mono">{post.title}</h3>
-                                <p className="text-gray-400 text-xs mt-1 font-mono">
-                                    {new Date(post.created_at).toLocaleDateString()}
-                                </p>
-                            </div>
-                        </motion.div>
-                    )}
-                </motion.div>
-            ))}
+                            </motion.div>
+                        )}
+                    </motion.div>
+                )
+            })}
 
             <div className="absolute bottom-4 left-0 right-0 text-center text-gray-500 text-sm pointer-events-none">
                 Click a star to explore the timeline
