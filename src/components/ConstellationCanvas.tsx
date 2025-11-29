@@ -141,9 +141,9 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
                     style={{
                         left: `${post.calculatedX}%`,
                         top: `${post.calculatedY}%`,
-                        transform: 'translate(-50%, -50%)' // Center the star on the coordinate
                     }}
-                    whileHover={{ scale: 1.5 }}
+                    initial={{ x: "-50%", y: "-50%" }}
+                    whileHover={{ scale: 1.5, zIndex: 50 }}
                     onClick={() => onPostClick(post)}
                     onMouseEnter={() => setHoveredPost(post)}
                     onMouseLeave={() => setHoveredPost(null)}
@@ -159,12 +159,19 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="absolute top-6 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-700 p-3 rounded-lg w-48 z-20 pointer-events-none"
+                            className={`absolute top-6 ${post.calculatedX > 80 ? 'right-0 translate-x-1/4' : 'left-1/2 -translate-x-1/2'} bg-gray-900 border border-gray-700 rounded-lg w-64 z-20 pointer-events-none overflow-hidden shadow-xl`}
                         >
-                            <h3 className="text-white font-bold text-sm">{post.title}</h3>
-                            <p className="text-gray-400 text-xs mt-1">
-                                {new Date(post.created_at).toLocaleDateString()}
-                            </p>
+                            {post.media_url && (
+                                <div className="h-32 w-full overflow-hidden">
+                                    <img src={post.media_url} alt="" className="w-full h-full object-cover" />
+                                </div>
+                            )}
+                            <div className="p-3">
+                                <h3 className="text-white font-bold text-sm font-mono">{post.title}</h3>
+                                <p className="text-gray-400 text-xs mt-1 font-mono">
+                                    {new Date(post.created_at).toLocaleDateString()}
+                                </p>
+                            </div>
                         </motion.div>
                     )}
                 </motion.div>

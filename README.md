@@ -1,73 +1,89 @@
-# React + TypeScript + Vite
+# Constellation Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A unique, constellation-themed portfolio website where projects are represented as stars in a night sky. Built with React, TypeScript, TailwindCSS, and Supabase.
 
-Currently, two official plugins are available:
+![Constellation Portfolio Preview](https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+-   **Interactive Constellation**: Stars represent projects/posts. Their position is calculated based on the date and time of the post, creating a unique "sky map" of your work history.
+-   **Immersive UI**: Dark mode "Night Sky" theme with smooth animations and hover effects.
+-   **Markdown Blog**: Full markdown support for project descriptions and blog posts.
+-   **Admin Dashboard**: Secure admin area to create, edit, and delete posts.
+-   **Site Settings**: Manage global site settings (Headline, About Me content) directly from the admin panel.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+-   **Frontend**: React, TypeScript, Vite
+-   **Styling**: TailwindCSS, Framer Motion
+-   **Backend**: Supabase (PostgreSQL, Auth)
+-   **Icons**: Lucide React
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+-   Node.js (v18 or higher)
+-   A [Supabase](https://supabase.com/) account
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Setup Instructions
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd darrell-portfolio
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Install Dependencies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+### 3. Supabase Setup
+
+1.  Create a new project in Supabase.
+2.  Go to the **SQL Editor** in your Supabase dashboard.
+3.  Copy the contents of `supabase/schema.sql` from this project and run it. This will:
+    -   Create the `posts` and `site_settings` tables.
+    -   Enable Row Level Security (RLS).
+    -   Set up access policies.
+    -   Insert some dummy data to get you started.
+
+### 4. Environment Variables
+
+Create a `.env` file in the root of the project and add your Supabase credentials:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+You can find these in your Supabase Dashboard under **Project Settings > API**.
+
+### 5. Run Locally
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## Usage
+
+### Admin Access
+1.  Navigate to `/login`.
+2.  Since the current auth implementation uses Supabase Auth, you will need to create a user in your Supabase Authentication dashboard manually (or enable signups temporarily).
+3.  Once logged in, you will be redirected to `/admin`.
+
+### Managing Content
+-   **Add Star**: Click "Create New Star" in the admin dashboard.
+-   **Edit Star**: Click "Edit" on any existing post.
+-   **Site Settings**: Update your Headline, About Me content, and media URLs in the "Site Settings" section of the admin dashboard.
+
+### Customization
+-   **Theme**: Edit `tailwind.config.js` to adjust colors.
+-   **Constellation Logic**: Modify `src/components/ConstellationCanvas.tsx` to change how star positions are calculated.
+
+## License
+
+MIT

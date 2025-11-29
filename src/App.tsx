@@ -6,15 +6,30 @@ import { ConstellationCanvas } from './components/ConstellationCanvas';
 import { PostViewer } from './components/PostViewer';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
+import About from './pages/About';
 
 function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
+  const [headline, setHeadline] = useState('Creative Technologist');
 
   useEffect(() => {
     fetchPosts();
+    fetchHeadline();
   }, []);
+
+  async function fetchHeadline() {
+    const { data } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'headline')
+      .single();
+
+    if (data) {
+      setHeadline(data.value);
+    }
+  }
 
   async function fetchPosts() {
     try {
@@ -34,12 +49,17 @@ function Home() {
 
   return (
     <div className="h-screen bg-night text-white font-sans selection:bg-white selection:text-black flex flex-col overflow-hidden">
-      <div className="absolute top-8 left-0 right-0 z-50 flex justify-center pointer-events-none">
-        <img
-          src="/NAME LOGO 1.png"
-          alt="DARRELL KELLER"
-          className="h-12 md:h-16 object-contain opacity-90"
-        />
+      <div className="absolute top-8 left-0 right-0 z-50 flex flex-col items-center pointer-events-none">
+        <Link to="/about" className="block hover:opacity-80 transition-opacity pointer-events-auto">
+          <img
+            src="/NAME LOGO 1.png"
+            alt="Darrell Keller Logo"
+            className="h-24 md:h-32 w-auto"
+          />
+        </Link>
+        <div className="mt-2 text-sm md:text-base font-mono tracking-widest text-gray-400 uppercase">
+          {headline}
+        </div>
       </div>
 
       <main className="flex-1 relative">
@@ -51,7 +71,7 @@ function Home() {
           <ConstellationCanvas posts={posts} onPostClick={setSelectedPost} />
         )}
 
-        <PostViewer post={selectedPost} />
+        <PostViewer post={selectedPost} onClose={() => setSelectedPost(null)} />
       </main>
 
       {/* Hidden login link for admin access */}
@@ -67,6 +87,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </Router>
   );
