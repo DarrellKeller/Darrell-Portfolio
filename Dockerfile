@@ -7,13 +7,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-
-# Build-time environment variables
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_ANON_KEY
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
-
 RUN npm run build
 
 # Stage 2: Serve the application with Nginx
@@ -23,8 +16,14 @@ FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy custom Nginx configuration
+# Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy startup script
+COPY env.sh /docker-entrypoint.d/env.sh
+RUN chmod +x /docker-entrypoint.d/env.sh
 
 EXPOSE 80
 
+ENTRYPOINT ["/docker-entrypoint.d/env.sh"]
 CMD ["nginx", "-g", "daemon off;"]
