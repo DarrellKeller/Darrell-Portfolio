@@ -131,12 +131,17 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
             </AnimatePresence>
 
             {/* Constellation SVG */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            <svg
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+            >
                 <polyline
-                    points={processedPosts.map(p => `${p.calculatedX}%,${p.calculatedY}%`).join(' ')}
+                    points={processedPosts.map(p => `${p.calculatedX},${p.calculatedY}`).join(' ')}
                     fill="none"
                     stroke="rgba(255, 255, 255, 0.2)"
-                    strokeWidth="1"
+                    strokeWidth="0.5"
+                    vectorEffect="non-scaling-stroke"
                 />
             </svg>
 
