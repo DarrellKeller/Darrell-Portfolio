@@ -129,6 +129,7 @@ export default function Admin() {
                 content: editingPost.content,
                 media_url: editingPost.media_url || null,
                 video_url: editingPost.video_url || null,
+                external_url: editingPost.external_url || null,
                 created_at: isoDate,
                 x: 0, // Legacy field, ignored by frontend
                 y: 0, // Legacy field, ignored by frontend
@@ -291,6 +292,17 @@ export default function Admin() {
                                     className="mt-1 block w-full bg-gray-800 border-gray-700 rounded-md text-white px-3 py-2"
                                     value={editingPost.video_url || ''}
                                     onChange={e => setEditingPost({ ...editingPost, video_url: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400">External URL (Optional - Opens in new tab)</label>
+                                <input
+                                    type="url"
+                                    className="mt-1 block w-full bg-gray-800 border-gray-700 rounded-md text-white px-3 py-2"
+                                    value={editingPost.external_url || ''}
+                                    onChange={e => setEditingPost({ ...editingPost, external_url: e.target.value })}
+                                    placeholder="https://..."
                                 />
                             </div>
 

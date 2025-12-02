@@ -59,7 +59,7 @@ function Home() {
             className="h-24 md:h-32 w-auto"
           />
         </Link>
-        <div className="mt-2 text-sm md:text-base font-mono tracking-widest text-gray-400 uppercase pointer-events-auto">
+        <div className="mt-2 text-sm md:text-base font-mono tracking-widest text-gray-400 uppercase pointer-events-auto text-center">
           <ReactMarkdown
             components={{
               a: ({ node, ...props }) => <a {...props} className="text-blue-400 hover:text-blue-300 underline" target="_blank" rel="noopener noreferrer" />,
