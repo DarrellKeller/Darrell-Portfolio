@@ -6,6 +6,7 @@ export interface Post {
     media_url?: string;
     video_url?: string;
     external_url?: string;
+    new_tab?: boolean;
     x: number;
     y: number;
 }

@@ -127,9 +127,9 @@ export default function Admin() {
             const postData = {
                 title: editingPost.title,
                 content: editingPost.content,
-                media_url: editingPost.media_url || null,
                 video_url: editingPost.video_url || null,
                 external_url: editingPost.external_url || null,
+                new_tab: editingPost.new_tab !== false, // Default to true if undefined
                 created_at: isoDate,
                 x: 0, // Legacy field, ignored by frontend
                 y: 0, // Legacy field, ignored by frontend
@@ -296,14 +296,40 @@ export default function Admin() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-400">External URL (Optional - Opens in new tab)</label>
-                                <input
-                                    type="url"
-                                    className="mt-1 block w-full bg-gray-800 border-gray-700 rounded-md text-white px-3 py-2"
-                                    value={editingPost.external_url || ''}
-                                    onChange={e => setEditingPost({ ...editingPost, external_url: e.target.value })}
-                                    placeholder="https://..."
-                                />
+                                <label className="block text-sm font-medium text-gray-400">External URL (Optional)</label>
+                                <div className="flex items-center space-x-2 mt-1">
+                                    <input
+                                        type="url"
+                                        className="flex-1 bg-gray-800 border-gray-700 rounded-md text-white px-3 py-2"
+                                        value={editingPost.external_url || ''}
+                                        onChange={e => setEditingPost({ ...editingPost, external_url: e.target.value })}
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                                {editingPost.external_url && (
+                                    <div className="mt-2 flex items-center space-x-4">
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="form-radio text-white bg-gray-800 border-gray-700"
+                                                name="new_tab"
+                                                checked={editingPost.new_tab !== false}
+                                                onChange={() => setEditingPost({ ...editingPost, new_tab: true })}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-300">Open in New Tab</span>
+                                        </label>
+                                        <label className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                className="form-radio text-white bg-gray-800 border-gray-700"
+                                                name="new_tab"
+                                                checked={editingPost.new_tab === false}
+                                                onChange={() => setEditingPost({ ...editingPost, new_tab: false })}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-300">Open in Same Tab</span>
+                                        </label>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex justify-end space-x-3 pt-4">
