@@ -7,9 +7,9 @@ import App from './App.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <PostHogProvider
-      apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+      apiKey={window.env?.VITE_PUBLIC_POSTHOG_KEY || import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
       options={{
-        api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+        api_host: window.env?.VITE_PUBLIC_POSTHOG_HOST || import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
         defaults: '2025-05-24',
         capture_exceptions: true,
         debug: import.meta.env.MODE === 'development',
