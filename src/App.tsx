@@ -48,6 +48,21 @@ function Home() {
     }
   }, [navigate, postId, selectedPost, slug]);
 
+  useEffect(() => {
+    const createdLinks = relMeLinks.map((link) => {
+      const element = document.createElement('link');
+      element.rel = 'me';
+      element.href = link.url;
+      element.dataset.indieauthRelMe = 'true';
+      document.head.appendChild(element);
+      return element;
+    });
+
+    return () => {
+      createdLinks.forEach((element) => element.remove());
+    };
+  }, [relMeLinks]);
+
   async function fetchHeadline() {
     const { data } = await supabase
       .from('site_settings')
@@ -126,21 +141,6 @@ function Home() {
       </main>
 
       {/* Hidden login link for admin access */}
-      {relMeLinks.length > 0 && (
-        <div className="absolute bottom-10 left-1/2 z-50 flex -translate-x-1/2 flex-wrap items-center justify-center gap-3 px-4 text-xs font-mono uppercase tracking-[0.2em] text-gray-400">
-          {relMeLinks.map((link) => (
-            <a
-              key={`${link.label}-${link.url}`}
-              href={link.url}
-              rel="me noopener noreferrer"
-              target="_blank"
-              className="pointer-events-auto transition hover:text-white"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-      )}
       <Link to="/login" className="fixed bottom-4 right-4 w-4 h-4 opacity-0 hover:opacity-50 cursor-default z-50" aria-label="Admin Login" />
     </div>
   );
