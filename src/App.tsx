@@ -8,7 +8,6 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import { buildPostPath, slugifyPostTitle } from './lib/postRoutes';
-import { DEFAULT_REL_ME_LINKS_RAW, parseRelMeLinks } from './lib/relMeLinks';
 
 import ReactMarkdown from 'react-markdown';
 
@@ -16,15 +15,12 @@ function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [headline, setHeadline] = useState('Creative Technologist');
-  const [relMeLinksRaw, setRelMeLinksRaw] = useState(DEFAULT_REL_ME_LINKS_RAW);
   const navigate = useNavigate();
   const { postId, slug } = useParams();
-  const relMeLinks = useMemo(() => parseRelMeLinks(relMeLinksRaw), [relMeLinksRaw]);
 
   useEffect(() => {
     fetchPosts();
     fetchHeadline();
-    fetchRelMeLinks();
   }, []);
 
   const selectedPost = useMemo(
@@ -48,21 +44,6 @@ function Home() {
     }
   }, [navigate, postId, selectedPost, slug]);
 
-  useEffect(() => {
-    const createdLinks = relMeLinks.map((link) => {
-      const element = document.createElement('link');
-      element.rel = 'me';
-      element.href = link.url;
-      element.dataset.indieauthRelMe = 'true';
-      document.head.appendChild(element);
-      return element;
-    });
-
-    return () => {
-      createdLinks.forEach((element) => element.remove());
-    };
-  }, [relMeLinks]);
-
   async function fetchHeadline() {
     const { data } = await supabase
       .from('site_settings')
@@ -72,18 +53,6 @@ function Home() {
 
     if (data) {
       setHeadline(data.value);
-    }
-  }
-
-  async function fetchRelMeLinks() {
-    const { data } = await supabase
-      .from('site_settings')
-      .select('value')
-      .eq('key', 'rel_me_links')
-      .maybeSingle();
-
-    if (data?.value?.trim()) {
-      setRelMeLinksRaw(data.value);
     }
   }
 
