@@ -206,6 +206,7 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
 
             <div className="absolute bottom-4 left-0 right-0 px-4 text-center text-gray-500 text-sm pointer-events-none">
                 <div>Click a star to open its page</div>
+                {/*
                 <div className="mt-1 flex items-center justify-center gap-4 pointer-events-auto text-sm">
                     <a
                         href="https://xn--sr8hvo.ws/previous"
@@ -229,6 +230,7 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
                         →
                     </a>
                 </div>
+                */}
             </div>
         </div>
     );
