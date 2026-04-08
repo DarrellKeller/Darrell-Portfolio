@@ -204,14 +204,30 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
                 )
             })}
 
-            <div className="absolute bottom-4 left-0 right-0 flex flex-col items-center justify-center gap-2 px-4 text-center text-gray-500 text-sm pointer-events-none md:flex-row md:gap-4">
-                <span>Click a star to open its page</span>
-                <div className="flex items-center gap-2 pointer-events-auto">
-                    <a href="https://xn--sr8hvo.ws/previous" className="hover:text-white transition-colors" aria-label="Previous site in the IndieWeb webring">←</a>
-                    <span>
-                        An <a href="https://xn--sr8hvo.ws" className="hover:text-white transition-colors">IndieWeb Webring</a> 🕸💍
-                    </span>
-                    <a href="https://xn--sr8hvo.ws/next" className="hover:text-white transition-colors" aria-label="Next site in the IndieWeb webring">→</a>
+            <div className="absolute bottom-4 left-0 right-0 px-4 text-center text-gray-500 text-sm pointer-events-none">
+                <div>Click a star to open its page</div>
+                <div className="mt-1 flex items-center justify-center gap-4 pointer-events-auto text-sm">
+                    <a
+                        href="https://xn--sr8hvo.ws/previous"
+                        className="hover:text-white transition-colors leading-none"
+                        aria-label="Previous site in the IndieWeb webring"
+                    >
+                        ←
+                    </a>
+                    <a
+                        href="https://xn--sr8hvo.ws"
+                        className="hover:text-white transition-colors leading-none"
+                        aria-label="IndieWeb Webring"
+                    >
+                        🕸💍
+                    </a>
+                    <a
+                        href="https://xn--sr8hvo.ws/next"
+                        className="hover:text-white transition-colors leading-none"
+                        aria-label="Next site in the IndieWeb webring"
+                    >
+                        →
+                    </a>
                 </div>
             </div>
         </div>
