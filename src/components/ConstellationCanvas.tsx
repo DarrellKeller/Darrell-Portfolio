@@ -159,7 +159,18 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
                         }}
                         initial={{ x: "-50%", y: "-50%" }}
                         whileHover={{ scale: 1.5, zIndex: 50 }}
-                        onClick={() => onPostClick(post)}
+                        onClick={() => {
+                            if (post.external_url) {
+                                if (post.new_tab !== false) {
+                                    window.open(post.external_url, '_blank');
+                                } else {
+                                    window.location.href = post.external_url;
+                                }
+                                return;
+                            }
+
+                            onPostClick(post);
+                        }}
                         onMouseEnter={() => setHoveredPost(post)}
                         onMouseLeave={() => setHoveredPost(null)}
                     >

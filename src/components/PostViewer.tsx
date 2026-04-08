@@ -10,7 +10,7 @@ interface PostViewerProps {
 }
 
 export const PostViewer: React.FC<PostViewerProps> = ({ post, onClose }) => {
-    const [shareLabel, setShareLabel] = useState('Share This Star');
+    const [shareLabel, setShareLabel] = useState('Share');
 
     useEffect(() => {
         if (post) {
@@ -24,7 +24,7 @@ export const PostViewer: React.FC<PostViewerProps> = ({ post, onClose }) => {
     }, [post]);
 
     useEffect(() => {
-        setShareLabel('Share This Star');
+        setShareLabel('Share');
     }, [post?.id]);
 
     async function handleShare() {

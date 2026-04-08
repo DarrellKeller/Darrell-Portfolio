@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Post } from '../types';
 import { useNavigate } from 'react-router-dom';
+import { DEFAULT_REL_ME_LINKS_RAW } from '../lib/relMeLinks';
 
 export default function Admin() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -12,6 +13,7 @@ export default function Admin() {
     const [newAboutContent, setNewAboutContent] = useState('');
     const [newAboutMedia, setNewAboutMedia] = useState('');
     const [newAboutVideo, setNewAboutVideo] = useState('');
+    const [relMeLinks, setRelMeLinks] = useState(DEFAULT_REL_ME_LINKS_RAW);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -67,6 +69,16 @@ export default function Admin() {
         if (videoData) {
             setNewAboutVideo(videoData.value);
         }
+
+        const { data: relMeData } = await supabase
+            .from('site_settings')
+            .select('value')
+            .eq('key', 'rel_me_links')
+            .maybeSingle();
+
+        if (relMeData?.value?.trim()) {
+            setRelMeLinks(relMeData.value);
+        }
     }
 
     async function updateSettings(e: React.FormEvent) {
@@ -76,7 +88,8 @@ export default function Admin() {
             supabase.from('site_settings').upsert({ key: 'headline', value: newHeadline }),
             supabase.from('site_settings').upsert({ key: 'about_content', value: newAboutContent }),
             supabase.from('site_settings').upsert({ key: 'about_media_url', value: newAboutMedia }),
-            supabase.from('site_settings').upsert({ key: 'about_video_url', value: newAboutVideo })
+            supabase.from('site_settings').upsert({ key: 'about_video_url', value: newAboutVideo }),
+            supabase.from('site_settings').upsert({ key: 'rel_me_links', value: relMeLinks })
         ];
 
         const results = await Promise.all(updates);
@@ -223,6 +236,19 @@ export default function Admin() {
                                 value={newAboutVideo}
                                 onChange={e => setNewAboutVideo(e.target.value)}
                             />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-400 mb-1">IndieAuth rel-me Links</label>
+                            <textarea
+                                rows={5}
+                                className="w-full bg-gray-800 border-gray-700 rounded-md text-white px-3 py-2 font-mono"
+                                value={relMeLinks}
+                                onChange={e => setRelMeLinks(e.target.value)}
+                                placeholder={'GitHub|https://github.com/your-handle\nLinkedIn|https://www.linkedin.com/in/your-handle'}
+                            />
+                            <p className="mt-2 text-xs text-gray-500">
+                                One link per line. Use the format Label|URL so the homepage can publish rel-me links for IndieAuth.
+                            </p>
                         </div>
                         <div className="flex justify-end">
                             <button type="submit" className="px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 font-medium">

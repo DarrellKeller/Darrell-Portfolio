@@ -7,6 +7,8 @@ import { PostViewer } from './components/PostViewer';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 import About from './pages/About';
+import { buildPostPath, slugifyPostTitle } from './lib/postRoutes';
+import { DEFAULT_REL_ME_LINKS_RAW, parseRelMeLinks } from './lib/relMeLinks';
 
 import ReactMarkdown from 'react-markdown';
 
@@ -14,18 +16,37 @@ function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [headline, setHeadline] = useState('Creative Technologist');
+  const [relMeLinksRaw, setRelMeLinksRaw] = useState(DEFAULT_REL_ME_LINKS_RAW);
   const navigate = useNavigate();
-  const { postId } = useParams();
+  const { postId, slug } = useParams();
+  const relMeLinks = useMemo(() => parseRelMeLinks(relMeLinksRaw), [relMeLinksRaw]);
 
   useEffect(() => {
     fetchPosts();
     fetchHeadline();
+    fetchRelMeLinks();
   }, []);
 
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === postId) ?? null,
     [posts, postId],
   );
+
+  useEffect(() => {
+    if (!selectedPost) {
+      return;
+    }
+
+    if (selectedPost.external_url) {
+      window.location.assign(selectedPost.external_url);
+      return;
+    }
+
+    const canonicalSlug = slugifyPostTitle(selectedPost.title);
+    if (postId && slug !== canonicalSlug) {
+      navigate(buildPostPath(selectedPost), { replace: true });
+    }
+  }, [navigate, postId, selectedPost, slug]);
 
   async function fetchHeadline() {
     const { data } = await supabase
@@ -36,6 +57,18 @@ function Home() {
 
     if (data) {
       setHeadline(data.value);
+    }
+  }
+
+  async function fetchRelMeLinks() {
+    const { data } = await supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'rel_me_links')
+      .maybeSingle();
+
+    if (data?.value?.trim()) {
+      setRelMeLinksRaw(data.value);
     }
   }
 
@@ -85,7 +118,7 @@ function Home() {
         ) : (
           <ConstellationCanvas
             posts={posts}
-            onPostClick={(post) => navigate(`/stars/${post.id}`)}
+            onPostClick={(post) => navigate(buildPostPath(post))}
           />
         )}
 
@@ -93,6 +126,21 @@ function Home() {
       </main>
 
       {/* Hidden login link for admin access */}
+      {relMeLinks.length > 0 && (
+        <div className="absolute bottom-10 left-1/2 z-50 flex -translate-x-1/2 flex-wrap items-center justify-center gap-3 px-4 text-xs font-mono uppercase tracking-[0.2em] text-gray-400">
+          {relMeLinks.map((link) => (
+            <a
+              key={`${link.label}-${link.url}`}
+              href={link.url}
+              rel="me noopener noreferrer"
+              target="_blank"
+              className="pointer-events-auto transition hover:text-white"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      )}
       <Link to="/login" className="fixed bottom-4 right-4 w-4 h-4 opacity-0 hover:opacity-50 cursor-default z-50" aria-label="Admin Login" />
     </div>
   );
@@ -103,6 +151,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/stars/:slug/:postId" element={<Home />} />
         <Route path="/stars/:postId" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
