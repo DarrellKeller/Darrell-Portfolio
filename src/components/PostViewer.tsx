@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import type { Post } from '../types';
@@ -10,6 +10,8 @@ interface PostViewerProps {
 }
 
 export const PostViewer: React.FC<PostViewerProps> = ({ post, onClose }) => {
+    const [shareLabel, setShareLabel] = useState('Share This Star');
+
     useEffect(() => {
         if (post) {
             document.body.style.overflow = 'hidden';
@@ -20,6 +22,33 @@ export const PostViewer: React.FC<PostViewerProps> = ({ post, onClose }) => {
             document.body.style.overflow = 'unset';
         };
     }, [post]);
+
+    useEffect(() => {
+        setShareLabel('Share This Star');
+    }, [post?.id]);
+
+    async function handleShare() {
+        if (!post) return;
+
+        const shareData = {
+            title: post.title,
+            text: `Take a look at ${post.title}`,
+            url: window.location.href,
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+                return;
+            }
+
+            await navigator.clipboard.writeText(window.location.href);
+            setShareLabel('Link Copied');
+        } catch (error) {
+            console.error('Error sharing post:', error);
+            setShareLabel('Copy Failed');
+        }
+    }
 
     return (
         <AnimatePresence>
@@ -80,6 +109,26 @@ export const PostViewer: React.FC<PostViewerProps> = ({ post, onClose }) => {
 
                             <div className="prose prose-invert prose-lg max-w-none pb-20">
                                 <ReactMarkdown>{post.content}</ReactMarkdown>
+                            </div>
+
+                            <div className="border-t border-gray-800 pt-8 pb-20 flex justify-center">
+                                {post.external_url ? (
+                                    <a
+                                        href={post.external_url}
+                                        target={post.new_tab !== false ? '_blank' : undefined}
+                                        rel={post.new_tab !== false ? 'noopener noreferrer' : undefined}
+                                        className="inline-flex items-center rounded-full border border-white/20 px-6 py-3 text-sm font-mono uppercase tracking-[0.2em] text-white transition hover:border-white hover:bg-white hover:text-black"
+                                    >
+                                        Visit Linked Project
+                                    </a>
+                                ) : (
+                                    <button
+                                        onClick={handleShare}
+                                        className="inline-flex items-center rounded-full border border-white/20 px-6 py-3 text-sm font-mono uppercase tracking-[0.2em] text-white transition hover:border-white hover:bg-white hover:text-black"
+                                    >
+                                        {shareLabel}
+                                    </button>
+                                )}
                             </div>
                         </motion.div>
                     </div>

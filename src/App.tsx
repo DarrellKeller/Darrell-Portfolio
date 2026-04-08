@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import type { Post } from './types';
 import { ConstellationCanvas } from './components/ConstellationCanvas';
@@ -12,14 +12,20 @@ import ReactMarkdown from 'react-markdown';
 
 function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [headline, setHeadline] = useState('Creative Technologist');
+  const navigate = useNavigate();
+  const { postId } = useParams();
 
   useEffect(() => {
     fetchPosts();
     fetchHeadline();
   }, []);
+
+  const selectedPost = useMemo(
+    () => posts.find((post) => post.id === postId) ?? null,
+    [posts, postId],
+  );
 
   async function fetchHeadline() {
     const { data } = await supabase
@@ -77,10 +83,13 @@ function Home() {
             <div className="animate-pulse text-gray-500">Scanning the stars...</div>
           </div>
         ) : (
-          <ConstellationCanvas posts={posts} onPostClick={setSelectedPost} />
+          <ConstellationCanvas
+            posts={posts}
+            onPostClick={(post) => navigate(`/stars/${post.id}`)}
+          />
         )}
 
-        <PostViewer post={selectedPost} onClose={() => setSelectedPost(null)} />
+        <PostViewer post={selectedPost} onClose={() => navigate('/')} />
       </main>
 
       {/* Hidden login link for admin access */}
@@ -94,6 +103,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/stars/:postId" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/about" element={<About />} />

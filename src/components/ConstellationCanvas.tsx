@@ -159,17 +159,7 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
                         }}
                         initial={{ x: "-50%", y: "-50%" }}
                         whileHover={{ scale: 1.5, zIndex: 50 }}
-                        onClick={() => {
-                            if (post.external_url) {
-                                if (post.new_tab !== false) {
-                                    window.open(post.external_url, '_blank');
-                                } else {
-                                    window.location.href = post.external_url;
-                                }
-                            } else {
-                                onPostClick(post);
-                            }
-                        }}
+                        onClick={() => onPostClick(post)}
                         onMouseEnter={() => setHoveredPost(post)}
                         onMouseLeave={() => setHoveredPost(null)}
                     >
@@ -204,7 +194,7 @@ export const ConstellationCanvas: React.FC<ConstellationCanvasProps> = ({ posts,
             })}
 
             <div className="absolute bottom-4 left-0 right-0 text-center text-gray-500 text-sm pointer-events-none">
-                Click a star to explore the timeline
+                Click a star to open its page
             </div>
         </div>
     );
