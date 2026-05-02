@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import { buildPostPath, slugifyPostTitle } from './lib/postRoutes';
+import { absoluteUrl, defaultSiteJsonLd, stripMarkdown, truncateDescription, updateSeo } from './lib/seo';
 
 import ReactMarkdown from 'react-markdown';
 
@@ -22,6 +23,17 @@ function Home() {
     fetchPosts();
     fetchHeadline();
   }, []);
+
+  useEffect(() => {
+    if (!postId) {
+      updateSeo({
+        title: 'Darrell Keller - Applied AI Design and Engineering',
+        description: 'AI design and engineering by Darrell Keller, featuring projects, writing, and PostAustin.com work.',
+        path: '/',
+        jsonLd: defaultSiteJsonLd(),
+      });
+    }
+  }, [postId]);
 
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === postId) ?? null,
@@ -43,6 +55,39 @@ function Home() {
       navigate(buildPostPath(selectedPost), { replace: true });
     }
   }, [navigate, postId, selectedPost, slug]);
+
+  useEffect(() => {
+    if (!selectedPost || selectedPost.external_url) {
+      return;
+    }
+
+    const path = buildPostPath(selectedPost);
+    const description = truncateDescription(stripMarkdown(selectedPost.content));
+
+    updateSeo({
+      title: `${selectedPost.title} | Darrell Keller`,
+      description,
+      path,
+      image: selectedPost.media_url,
+      type: 'article',
+      publishedTime: selectedPost.created_at,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'CreativeWork',
+        headline: selectedPost.title,
+        name: selectedPost.title,
+        description,
+        datePublished: selectedPost.created_at,
+        url: absoluteUrl(path),
+        image: selectedPost.media_url ? absoluteUrl(selectedPost.media_url) : undefined,
+        author: {
+          '@type': 'Person',
+          name: 'Darrell Keller',
+          url: 'https://postaustin.com',
+        },
+      },
+    });
+  }, [selectedPost]);
 
   async function fetchHeadline() {
     const { data } = await supabase
@@ -85,8 +130,8 @@ function Home() {
         <div className="mt-2 text-sm md:text-base font-mono tracking-widest text-gray-400 uppercase pointer-events-auto text-center">
           <ReactMarkdown
             components={{
-              a: ({ node, ...props }) => <a {...props} className="text-blue-400 hover:text-blue-300 underline" target="_blank" rel="noopener noreferrer" />,
-              p: ({ node, ...props }) => <span {...props} />
+              a: ({ ...props }) => <a {...props} className="text-blue-400 hover:text-blue-300 underline" target="_blank" rel="noopener noreferrer" />,
+              p: ({ ...props }) => <span {...props} />
             }}
           >
             {headline}
@@ -107,6 +152,19 @@ function Home() {
         )}
 
         <PostViewer post={selectedPost} onClose={() => navigate('/')} />
+
+        <nav className="sr-only" aria-label="Project pages">
+          <h2>Projects and writing</h2>
+          <ul>
+            {posts
+              .filter((post) => !post.external_url)
+              .map((post) => (
+                <li key={post.id}>
+                  <Link to={buildPostPath(post)}>{post.title}</Link>
+                </li>
+              ))}
+          </ul>
+        </nav>
       </main>
 
       {/* Hidden login link for admin access */}

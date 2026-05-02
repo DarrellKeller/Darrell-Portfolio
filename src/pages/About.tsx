@@ -1,19 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
+import { defaultSiteJsonLd, stripMarkdown, truncateDescription, updateSeo } from '../lib/seo';
 
 export default function About() {
     const [content, setContent] = useState('');
     const [mediaUrl, setMediaUrl] = useState('');
     const [videoUrl, setVideoUrl] = useState('');
 
-    useEffect(() => {
-        fetchContent();
-    }, []);
-
-    async function fetchContent() {
+    const fetchContent = useCallback(async () => {
         const { data: contentData } = await supabase
             .from('site_settings')
             .select('value')
@@ -37,7 +34,26 @@ export default function About() {
             .single();
 
         if (videoData) setVideoUrl(videoData.value);
-    }
+    }, []);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchContent();
+    }, [fetchContent]);
+
+    useEffect(() => {
+        const description = content
+            ? truncateDescription(stripMarkdown(content))
+            : 'About Darrell Keller, an AI design and engineering practitioner building thoughtful digital experiences.';
+
+        updateSeo({
+            title: 'About Darrell Keller | Applied AI Design and Engineering',
+            description,
+            path: '/about',
+            image: mediaUrl || undefined,
+            jsonLd: defaultSiteJsonLd(),
+        });
+    }, [content, mediaUrl]);
 
     return (
         <div className="min-h-screen bg-night text-white font-sans selection:bg-white selection:text-black">
