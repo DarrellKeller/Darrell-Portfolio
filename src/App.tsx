@@ -83,7 +83,7 @@ function Home() {
         author: {
           '@type': 'Person',
           name: 'Darrell Keller',
-          url: 'https://postaustin.com',
+          url: 'https://dkdoes.us',
         },
       },
     });

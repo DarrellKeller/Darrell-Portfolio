@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://postaustin.com/sitemap.xml
+Sitemap: https://dkdoes.us/sitemap.xml

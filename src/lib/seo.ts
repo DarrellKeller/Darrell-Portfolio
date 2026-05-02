@@ -1,4 +1,4 @@
-const SITE_URL = 'https://postaustin.com';
+const SITE_URL = 'https://dkdoes.us';
 const SITE_NAME = 'Darrell Keller';
 const DEFAULT_TITLE = 'Darrell Keller - Applied AI Design and Engineering';
 const DEFAULT_DESCRIPTION = 'AI design and engineering by Darrell Keller, featuring projects, writing, and PostAustin.com work.';
